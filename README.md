@@ -1,6 +1,11 @@
 # NodeWeb
 A lightweight decentralized and node-centric graph library in Python. 
 
+Rules of NodeWeb
+1. Be yourself
+2. Be optimized
+3. Be lightweight
+
 No bells and whitstles, just the bare minimum to be functional.  
 
 ---
