@@ -1,18 +1,20 @@
 # NodeWeb
-A lightweight decentralized and node-centric graph library in Python. 
+
+A lightweight, decentralized, and node-centric graph library in Python.
 
 Rules of NodeWeb
-1. Be yourself
-2. Be optimized
-3. Be lightweight
 
-No bells and whitstles, just the bare minimum to be functional.  
+1. Be optimized
+2. Be lightweight
+3. Be yourself
+
+No bells and whistles, just nuts and bolts.  
 
 ---
 
 Creating a lightweight decentralized and node-centric graph library involves designing a system that is modular, easy to use, and capable of supporting distributed graph operations. Here's a plan for your minimum viable product (MVP) first release design:
 
-### Key Features
+## Key Features
 
 1. **Node and Edge Definitions**
    - **Node**: A simple class with attributes for the node's ID and properties.
