@@ -1,14 +1,16 @@
-# NodeWeb
+# NodeSwarm
 
-A lightweight, decentralized, and node-centric graph library in Python.
+NodeSwarm is a lightweight, decentralized, swarm-based graph system in Python.
 
-Rules of NodeWeb
+It is purpose built to facilitate TimeBandit, a temporal simulation framework.
+
+Rules of NodeSwarm
 
 1. Be optimized
 2. Be lightweight
 3. Be yourself
 
-No bells and whistles, just nuts and bolts.  
+No bells and whistles, only nuts and bolts.  
 
 ---
 
