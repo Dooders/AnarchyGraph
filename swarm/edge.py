@@ -12,21 +12,14 @@ if TYPE_CHECKING:
 
 
 class Edge:
-    def __init__(self, node: "Node") -> None:
-        """
-        Parameters
-        ----------
-        node : Node
-            The node to connect to.
-        """
+    """
+    An Edge is a connection between two nodes.
+    """
+
+    def __init__(self, node: "Node", edge_type: str = "directed") -> None:
         self.node = node
+        self.edge_type = edge_type
         self.node_id = node.node_id
 
     def __repr__(self) -> str:
-        """
-        Returns
-        -------
-        str
-            A string representation of the edge.
-        """
         return f"Edge(node: {self.node.node_id})"
