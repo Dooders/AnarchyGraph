@@ -6,6 +6,9 @@ Node does not store the graph it belongs to??? Will it need it? Can it somehow
 reference a parent from itself?
 
 Node doesn't know what edges comes from another node into it?
+
+TODO:
+- Edge container to make it a node component. Allows for node to have specialty edges
 """
 
 from typing import Any
@@ -33,6 +36,10 @@ class Node:
         Removes an edge from the node.
     get_edges(self) -> dict:
         Returns the edges of the node.
+
+    TODO
+    ----
+    - Allow multiple edges between nodes, and a way to manage them
     """
 
     def __init__(self, node_id: int, data: Any = None) -> None:
@@ -40,7 +47,7 @@ class Node:
         self.data = data
         self._edges = {}
 
-    def add_edge(self, node: "Node") -> None:
+    def add_edge(self, node: "Node", edge_type: str = "undirected") -> None:
         """
         Adds an edge to the node.
 
@@ -48,10 +55,15 @@ class Node:
         ----------
         other_node : Node
             The node to connect to.
+        edge_type : str, optional
+            The type of the edge. Defaults to "undirected".
         weight : int, optional
             The weight of the edge. Defaults to 1.
         """
-        self._edges[node.node_id] = Edge(node)
+        if node.node_id not in self._edges:
+            self._edges[node.node_id] = Edge(node, edge_type=edge_type)
+            if edge_type == "directed":
+                node.add_edge(self, edge_type="directed")
 
     def remove_edge(self, node: "Node") -> None:
         """
@@ -63,6 +75,9 @@ class Node:
             The node to disconnect from.
         """
         if node.node_id in self._edges:
+            edge = self._edges[node.node_id]
+            if edge.edge_type == "directed":
+                node.remove_edge(self)
             del self._edges[node.node_id]
 
     def edges(self) -> dict:
