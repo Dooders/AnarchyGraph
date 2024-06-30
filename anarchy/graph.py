@@ -77,6 +77,14 @@ class Graph(dict):
         """Returns a random node from the graph."""
         return random.choice(list(self.values()))
 
+    def add_edge(self, node1: int, node2: int, edge_type: str = "directed") -> None:
+        """Adds an edge between two nodes."""
+        self[node1].edges.add(self[node2], edge_type)
+
+    def remove_edge(self, node1: int, node2: int) -> None:
+        """Removes an edge between two nodes."""
+        self[node1].edges.remove(self[node2])
+
     def to_dict(self, schema: str = "cytoscape") -> dict:
         """Returns the graph as a dictionary."""
         nodes = []
@@ -140,15 +148,25 @@ class Graph(dict):
         return len(self.edges) / (len(self.nodes) * (len(self.nodes) - 1))
 
 
-class UnconnectedGraph(Graph):
+class CompleteGraph(Graph):
     """
-    Creates an fully unconnected graph with n nodes. Each node has no edges.
+    Creates a complete graph with n nodes.
 
     Inherits from Graph class.
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
+    edge_type : str
+        The type of edge to create. Can be "directed" or "undirected".
     """
 
-    def __init__(self, node_count: int) -> None:
+    def __init__(self, node_count: int, edge_type: str = "directed") -> None:
         super().__init__(node_count)
+        for i in range(node_count):
+            for j in range(i + 1, node_count):
+                self.add_edge(i, j, edge_type)
 
 
 class SparseGraph(Graph):
@@ -156,26 +174,48 @@ class SparseGraph(Graph):
     Creates a sparse graph with n nodes.
 
     Inherits from Graph class.
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
+    sparsity : float
+        The sparsity factor of the graph, between 0 and 1. 1 indicates no edges,
+        0 indicates all edges.
     """
 
-    def __init__(self, node_count: int) -> None:
+    def __init__(self, node_count: int, sparsity: float = 0.1) -> None:
         super().__init__(node_count)
-        raise NotImplementedError("SparseGraph is not implemented yet.")
+        self.sparsity = sparsity
+        self._create_sparse_edges()
+
+    def _create_sparse_edges(self):
+        """Create sparse edges based on the sparsity factor."""
+        max_edges = self.node_count * (self.node_count - 1) // 2
+        num_edges = int(max_edges * self.sparsity)
+        edges_added = set()
+
+        while len(edges_added) < num_edges:
+            node1, node2 = random.sample(self.nodes, 2)
+            if (
+                node1.node_id != node2.node_id
+                and (node1.node_id, node2.node_id) not in edges_added
+            ):
+                node1.add_neighbor(node2.node_id)
+                node2.add_neighbor(node1.node_id)
+                edges_added.add((node1.node_id, node2.node_id))
+                edges_added.add((node2.node_id, node1.node_id))
 
 
-class CompleteGraph(Graph):
+class IsolatedGraph(Graph):
     """
-    Creates a complete graph with n nodes.
+    Creates an isolated graph with n nodes. There are no edges between nodes.
 
     Inherits from Graph class.
     """
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        for i in range(node_count):
-            for j in range(i + 1, node_count):
-                self[i].add_neighbor(j)
-                self[j].add_neighbor(i)
 
 
 class StarGraph(Graph):
