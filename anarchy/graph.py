@@ -24,7 +24,9 @@ from collections import deque
 
 import graphviz
 
+from anarchy.edge import Edge
 from anarchy.node import Node
+from anarchy.util import convert_to_cytoscape_json
 
 
 class Graph(dict):
@@ -85,6 +87,10 @@ class Graph(dict):
         """Removes an edge between two nodes."""
         self[node1].edges.remove(self[node2])
 
+    def get_edges(self) -> list[tuple["Node", "Node"]]:
+        """Returns the list of edges in the graph."""
+        return [(u, v) for u in self.nodes for v in u.edges]
+
     def to_dict(self, schema: str = "cytoscape") -> dict:
         """Returns the graph as a dictionary."""
         nodes = []
@@ -95,7 +101,7 @@ class Graph(dict):
                 edges.append(
                     {"id": edge.edge_id, "source": node.node_id, "target": edge.node_id}
                 )
-        return {"nodes": nodes, "edges": edges}
+        return {"elements": {"nodes": nodes, "edges": edges}}
 
     def to_json(self, schema: str = "cytoscape") -> str:
         """Returns the graph as a JSON string."""
@@ -119,6 +125,13 @@ class Graph(dict):
         """Returns the graph as an edge list."""
         return [(edge.node_id, edge.node_id) for edge in self.values()]
 
+    def export(self, filename: str) -> None:
+        """Exports the graph to a JSON file."""
+        graph_data = self.to_dict()["elements"]
+        cytoscape_json = convert_to_cytoscape_json(graph_data)
+        with open(filename, "w") as f:
+            f.write(cytoscape_json)
+
     def draw(self) -> bytes:
         """
         Draws the graph.
@@ -133,9 +146,24 @@ class Graph(dict):
         return graph.pipe(format="png")
 
     @property
-    def nodes(self) -> list[Node]:
+    def nodes(self) -> list["Node"]:
         """Returns the list of nodes in the graph."""
         return list(self.values())
+
+    @property
+    def num_nodes(self) -> int:
+        """Returns the number of nodes in the graph."""
+        return len(self)
+
+    @property
+    def edges(self) -> list["Edge"]:
+        """Returns the list of edges in the graph."""
+        return [edge for node in self.values() for edge in node.edges.values()]
+
+    @property
+    def num_edges(self) -> int:
+        """Returns the number of edges in the graph."""
+        return len(self.edges)
 
     @property
     def density(self) -> float:
@@ -164,9 +192,16 @@ class CompleteGraph(Graph):
 
     def __init__(self, node_count: int, edge_type: str = "directed") -> None:
         super().__init__(node_count)
-        for i in range(node_count):
-            for j in range(i + 1, node_count):
-                self.add_edge(i, j, edge_type)
+        self.edge_type = edge_type
+        self._create_complete_graph()
+
+    def _create_complete_graph(self):
+        """Creates a complete graph structure."""
+        for i in range(self.node_count):
+            for j in range(i + 1, self.node_count):
+                self[i].edges.add(self[j], edge_type=self.edge_type)
+                if self.edge_type == "undirected":
+                    self[j].edges.add(self[i], edge_type=self.edge_type)
 
 
 class SparseGraph(Graph):
@@ -201,8 +236,7 @@ class SparseGraph(Graph):
                 node1.node_id != node2.node_id
                 and (node1.node_id, node2.node_id) not in edges_added
             ):
-                node1.add_neighbor(node2.node_id)
-                node2.add_neighbor(node1.node_id)
+                node1.edges.add(node2, edge_type="undirected")
                 edges_added.add((node1.node_id, node2.node_id))
                 edges_added.add((node2.node_id, node1.node_id))
 
@@ -223,12 +257,27 @@ class StarGraph(Graph):
     Creates a star graph with n nodes.
 
     Inherits from Graph class.
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        for i in range(node_count):
-            self[i].add_neighbor(0)
+        self._create_star_graph()
+
+    def _create_star_graph(self):
+        """Creates a star graph structure."""
+        if self.node_count < 2:
+            return
+
+        center_node = self[0]
+        for node in self.values():
+            if node != center_node:
+                center_node.edges.add(node, edge_type="directed")
+                node.edges.add(center_node, edge_type="directed")
 
 
 class TreeGraph(Graph):
@@ -236,14 +285,26 @@ class TreeGraph(Graph):
     Creates a tree graph with n nodes.
 
     Inherits from Graph class.
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        for i in range(1, node_count):
-            parent = (i - 1) // 2
-            self[i].add_neighbor(parent)
-            self[parent].add_neighbor(i)
+        self._create_tree_graph()
+
+    def _create_tree_graph(self):
+        """Creates a tree graph structure."""
+        if self.node_count < 2:
+            return
+
+        for i in range(1, self.node_count):
+            parent_id = (i - 1) // 2
+            self[i].edges.add(self[parent_id], edge_type="directed")
+            self[parent_id].edges.add(self[i], edge_type="directed")
 
 
 class BinaryTreeGraph(Graph):
@@ -251,19 +312,33 @@ class BinaryTreeGraph(Graph):
     Creates a binary tree graph with n nodes.
 
     Inherits from Graph class.
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        for i in range(node_count):
-            left = 2 * i + 1
-            right = 2 * i + 2
-            if left < node_count:
-                self[i].add_neighbor(left)
-                self[left].add_neighbor(i)
-            if right < node_count:
-                self[i].add_neighbor(right)
-                self[right].add_neighbor(i)
+        self._create_binary_tree_graph()
+
+    def _create_binary_tree_graph(self):
+        """Creates a binary tree graph structure."""
+        if self.node_count < 2:
+            return
+
+        for i in range(self.node_count):
+            left_child_id = 2 * i + 1
+            right_child_id = 2 * i + 2
+
+            if left_child_id < self.node_count:
+                self[i].edges.add(self[left_child_id], edge_type="directed")
+                self[left_child_id].edges.add(self[i], edge_type="directed")
+
+            if right_child_id < self.node_count:
+                self[i].edges.add(self[right_child_id], edge_type="directed")
+                self[right_child_id].edges.add(self[i], edge_type="directed")
 
 
 class CycleGraph(Graph):
@@ -271,12 +346,26 @@ class CycleGraph(Graph):
     Creates a cycle graph with n nodes.
 
     Inherits from Graph class.
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        for i in range(node_count):
-            self[i].add_neighbor((i + 1) % node_count)
+        self._create_cycle_graph()
+
+    def _create_cycle_graph(self):
+        """Creates a cycle graph structure."""
+        if self.node_count < 2:
+            return
+
+        for i in range(self.node_count):
+            next_node_id = (i + 1) % self.node_count
+            self[i].edges.add(self[next_node_id], edge_type="directed")
+            self[next_node_id].edges.add(self[i], edge_type="directed")
 
 
 class PathGraph(Graph):
@@ -288,8 +377,16 @@ class PathGraph(Graph):
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        for i in range(node_count - 1):
-            self[i].add_neighbor(i + 1)
+        self._create_path_graph()
+
+    def _create_path_graph(self):
+        """Creates a path graph structure."""
+        if self.node_count < 2:
+            return
+
+        for i in range(self.node_count - 1):
+            self[i].edges.add(self[i + 1], edge_type="directed")
+            self[i + 1].edges.add(self[i], edge_type="directed")
 
 
 class WheelGraph(Graph):
@@ -301,18 +398,23 @@ class WheelGraph(Graph):
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        if node_count < 2:
-            raise ValueError("A wheel graph must have at least 2 nodes.")
+        self._create_wheel_graph()
+
+    def _create_wheel_graph(self):
+        """Creates a wheel graph structure."""
+        if self.node_count < 4:
+            return
 
         # Connect the central node (node 0) to all other nodes
-        for i in range(1, node_count):
-            self[0].add_neighbor(i)
-            self[i].add_neighbor(0)
+        for i in range(1, self.node_count):
+            self[0].edges.add(self[i], edge_type="directed")
+            self[i].edges.add(self[0], edge_type="directed")
 
         # Connect the outer nodes in a cycle
-        for i in range(1, node_count):
-            self[i].add_neighbor((i % (node_count - 1)) + 1)
-            self[(i % (node_count - 1)) + 1].add_neighbor(i)
+        for i in range(1, self.node_count):
+            next_node_id = (i % (self.node_count - 1)) + 1
+            self[i].edges.add(self[next_node_id], edge_type="directed")
+            self[next_node_id].edges.add(self[i], edge_type="directed")
 
 
 class GridGraph(Graph):
@@ -323,20 +425,25 @@ class GridGraph(Graph):
     """
 
     def __init__(self, rows: int, cols: int) -> None:
+        self.rows = rows
+        self.cols = cols
         node_count = rows * cols
         super().__init__(node_count)
+        self._create_grid_graph()
 
-        for row in range(rows):
-            for col in range(cols):
-                node = row * cols + col
-                if col < cols - 1:  # Connect to the right neighbor
-                    right = node + 1
-                    self[node].add_neighbor(right)
-                    self[right].add_neighbor(node)
-                if row < rows - 1:  # Connect to the bottom neighbor
-                    bottom = node + cols
-                    self[node].add_neighbor(bottom)
-                    self[bottom].add_neighbor(node)
+    def _create_grid_graph(self):
+        """Creates a grid graph structure."""
+        for row in range(self.rows):
+            for col in range(self.cols):
+                node_id = row * self.cols + col
+                if col < self.cols - 1:
+                    right_node_id = node_id + 1
+                    self[node_id].edges.add(self[right_node_id], edge_type="directed")
+                    self[right_node_id].edges.add(self[node_id], edge_type="directed")
+                if row < self.rows - 1:
+                    bottom_node_id = node_id + self.cols
+                    self[node_id].edges.add(self[bottom_node_id], edge_type="directed")
+                    self[bottom_node_id].edges.add(self[node_id], edge_type="directed")
 
 
 class BiPartiteGraph(Graph):
@@ -348,16 +455,15 @@ class BiPartiteGraph(Graph):
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
+        self._create_bipartite_graph()
 
-        if node_count % 2 != 0:
-            raise ValueError("A bi-partite graph must have an even number of nodes.")
-
-        # Connect nodes in two sets
-        mid = node_count // 2
+    def _create_bipartite_graph(self):
+        """Creates a bi-partite graph structure."""
+        mid = self.node_count // 2
         for i in range(mid):
-            for j in range(mid, node_count):
-                self[i].add_neighbor(j)
-                self[j].add_neighbor(i)
+            for j in range(mid, self.node_count):
+                self[i].edges.add(self[j], edge_type="directed")
+                self[j].edges.add(self[i], edge_type="directed")
 
 
 class CompleteBiPartiteGraph(Graph):
@@ -369,18 +475,15 @@ class CompleteBiPartiteGraph(Graph):
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
+        self._create_complete_bipartite_graph()
 
-        if node_count % 2 != 0:
-            raise ValueError(
-                "A complete bi-partite graph must have an even number of nodes."
-            )
-
-        # Connect every node in the first set to every node in the second set
-        mid = node_count // 2
+    def _create_complete_bipartite_graph(self):
+        """Creates a complete bi-partite graph structure."""
+        mid = self.node_count // 2
         for i in range(mid):
-            for j in range(mid, node_count):
-                self[i].add_neighbor(j)
-                self[j].add_neighbor(i)
+            for j in range(mid, self.node_count):
+                self[i].edges.add(self[j], edge_type="directed")
+                self[j].edges.add(self[i], edge_type="directed")
 
 
 class DirectedAcyclicGraph(Graph):
@@ -392,48 +495,13 @@ class DirectedAcyclicGraph(Graph):
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
+        self._create_dag()
 
-        # Create a random directed acyclic graph
-        self.edges = set()
-        for i in range(node_count):
-            for j in range(i + 1, node_count):
-                if random.choice([True, False]):
-                    self[i].add_neighbor(j)
-                    edges.add((i, j))
-
-        # Ensure there are no cycles
-        def has_cycle():
-            visited = [False] * node_count
-            rec_stack = [False] * node_count
-
-            def cycle_util(v):
-                visited[v] = True
-                rec_stack[v] = True
-
-                for neighbor in self[v].neighbors:
-                    if not visited[neighbor]:
-                        if cycle_util(neighbor):
-                            return True
-                    elif rec_stack[neighbor]:
-                        return True
-
-                rec_stack[v] = False
-                return False
-
-            for node in range(node_count):
-                if not visited[node]:
-                    if cycle_util(node):
-                        return True
-            return False
-
-        while has_cycle():
-            self.clear()
-            edges = set()
-            for i in range(node_count):
-                for j in range(i + 1, node_count):
-                    if random.choice([True, False]):
-                        self[i].add_neighbor(j)
-                        edges.add((i, j))
+    def _create_dag(self):
+        """Creates a directed acyclic graph structure."""
+        for i in range(self.node_count):
+            for j in range(i + 1, self.node_count):
+                self[i].edges.add(self[j], edge_type="directed")
 
 
 class RandomGraph(Graph):
@@ -466,5 +534,41 @@ class RandomGraph(Graph):
         count = 0
         while count <= max_edges:
             node1, node2 = random.sample(eligible_nodes, 2)
-            node1.edges.add(node2, edge_type="undirected")
+            node1.edges.add(node2, edge_type="directed")
             count += 1
+
+
+import matplotlib.pyplot as plt
+
+
+def draw_graph(graph: "Graph") -> None:
+    """Returns a custom visualization of graph with matplotlib"""
+    plt.figure(figsize=(10, 8))
+
+    # Generate positions for nodes
+    pos = {node: (random.uniform(0, 1), random.uniform(0, 1)) for node in graph.nodes}
+
+    # Draw nodes
+    for node, (x, y) in pos.items():
+        plt.scatter(x, y, s=700, c="skyblue")
+        plt.text(
+            x,
+            y,
+            s=node.node_id,
+            fontsize=12,
+            ha="center",
+            va="center",
+            fontweight="bold",
+        )
+
+    # Draw edges
+    edges = graph.get_edges()
+    for u, v in edges:
+        print(f"Drawing edge from {u} to {v}")
+        x1, y1 = pos[u]
+        x2, y2 = pos[v]
+        plt.plot([x1, x2], [y1, y2], "k-", lw=2)
+
+    plt.title("Custom Graph Visualization")
+    plt.axis("off")
+    plt.show()
