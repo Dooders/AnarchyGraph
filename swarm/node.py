@@ -35,11 +35,6 @@ class Node:
     def __repr__(self) -> str:
         """
         Returns a string representation of the node.
-
-        Returns
-        -------
-        str
-            A string representation of the node.
         """
         return (
             f"Node({self.node_id}, Data: {self.data}, Edges: {list(self.edges.keys())})"
