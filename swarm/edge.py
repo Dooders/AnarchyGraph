@@ -5,6 +5,8 @@ Edge will contain the node reference and any other pertinent information.
 import weakref
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
+import uuid
+
 if TYPE_CHECKING:
     from swarm.node import Node
 
@@ -50,6 +52,7 @@ class Edge:
         self.node_ref = weakref.ref(node)
         self.edge_type = edge_type
         self.node_id = node.node_id
+        self.edge_id = str(uuid.uuid4())
         self.edge_holder = edge_holder
         if edge_holder is not None:
             self.finalizer = weakref.finalize(node, self._remove_edge)
@@ -79,6 +82,15 @@ class Edges(dict):
     """
     Dict-like object to store edges.
 
+    Methods
+    -------
+    add : "Node", str
+        Adds an edge to the node.
+    remove : "Node" or int or str
+        Removes an edge from the node.
+    edges : dict
+        Returns the edges of the node.
+
     TODO
     ----
     -  Access nodes by traversing edges (by [] or by method)
@@ -98,6 +110,7 @@ class Edges(dict):
         edge_type : str, optional
             The type of the edge. Defaults to "undirected".
         """
+
         if node.node_id not in self:
             edge = Edge(node, edge_type=edge_type, edge_holder=self)
             self[node.node_id] = edge
@@ -121,7 +134,7 @@ class Edges(dict):
         if node_id in self:
             edge = self[node_id]
             if edge.edge_type == "directed" and edge.node is not None:
-                edge.node.remove_edge(self)
+                edge.node.edges.remove(edge)
             del self[node_id]
 
     def edges(self) -> Dict[int, "Edge"]:
