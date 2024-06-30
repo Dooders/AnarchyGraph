@@ -129,6 +129,16 @@ class Graph(dict):
         """Returns the list of nodes in the graph."""
         return list(self.values())
 
+    @property
+    def density(self) -> float:
+        """
+        Returns the density of the graph.
+
+        The density of a graph is the ratio of the number of edges to the maximum
+        possible number of edges.
+        """
+        return len(self.edges) / (len(self.nodes) * (len(self.nodes) - 1))
+
 
 class UnconnectedGraph(Graph):
     """
@@ -139,6 +149,18 @@ class UnconnectedGraph(Graph):
 
     def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
+
+
+class SparseGraph(Graph):
+    """
+    Creates a sparse graph with n nodes.
+
+    Inherits from Graph class.
+    """
+
+    def __init__(self, node_count: int) -> None:
+        super().__init__(node_count)
+        raise NotImplementedError("SparseGraph is not implemented yet.")
 
 
 class CompleteGraph(Graph):
