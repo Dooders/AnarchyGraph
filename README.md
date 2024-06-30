@@ -2,8 +2,6 @@
 
 AnarchyGraph is a lightweight, decentralized, node-centric graph system in Python.
 
-*No bells and whistles, only nuts and bolts.*
-
 ## Rules of AnarchyGraph
 
 1. Be **independent**
