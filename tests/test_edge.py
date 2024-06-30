@@ -1,5 +1,3 @@
-from typing import Dict
-
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -66,7 +64,3 @@ class TestEdges:
             repr(edges[node1.node_id])
             == f"Edge(node: {node1.node_id}, type: undirected)"
         )
-
-
-if __name__ == "__main__":
-    pytest.main()
