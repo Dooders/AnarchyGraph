@@ -2,10 +2,9 @@
 Edge will contain the node reference and any other pertinent information.
 """
 
+import uuid
 import weakref
 from typing import TYPE_CHECKING, Dict, Optional, Union
-
-import uuid
 
 if TYPE_CHECKING:
     from anarchy.node import Node
@@ -99,7 +98,7 @@ class Edges(dict):
     def __init__(self) -> None:
         super().__init__()
 
-    def add(self, node: "Node", edge_type: str = "undirected") -> None:
+    def add(self, node: "Node", edge_type: str = "directed") -> None:
         """
         Adds an edge to the node.
 
@@ -108,14 +107,14 @@ class Edges(dict):
         node : Node
             The node to connect to.
         edge_type : str, optional
-            The type of the edge. Defaults to "undirected".
+            The type of the edge. Defaults to "directed".
         """
 
         if node.node_id not in self:
             edge = Edge(node, edge_type=edge_type, edge_holder=self)
             self[node.node_id] = edge
-            if edge_type == "directed":
-                node.edges.add(self, edge_type="directed")
+            if edge_type == "undirected":
+                node.edges.add(node, edge_type="directed")
 
     def remove(self, node_or_id: Union["Node", int, str]) -> None:
         """
