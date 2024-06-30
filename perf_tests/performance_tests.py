@@ -1,6 +1,6 @@
 import pyperf
-from swarm.edge import Edges
-from swarm.node import Node
+from anarchy.edge import Edges
+from anarchy.node import Node
 from functools import partial
 
 def create_nodes(n):

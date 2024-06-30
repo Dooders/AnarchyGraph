@@ -4,8 +4,8 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from swarm.graph import Graph, RandomGraph
-from swarm.node import Node
+from anarchy.graph import Graph, RandomGraph
+from anarchy.node import Node
 
 
 class TestGraph:

@@ -2,8 +2,8 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from swarm.edge import Edge, Edges
-from swarm.node import Node
+from anarchy.edge import Edge, Edges
+from anarchy.node import Node
 
 
 class TestEdges:

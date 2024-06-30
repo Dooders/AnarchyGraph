@@ -24,7 +24,7 @@ from collections import deque
 
 import graphviz
 
-from swarm.node import Node
+from anarchy.node import Node
 
 
 class Graph(dict):

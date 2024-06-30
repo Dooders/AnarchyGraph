@@ -2,7 +2,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from swarm.node import Node
+from anarchy.node import Node
 
 
 class TestNode:

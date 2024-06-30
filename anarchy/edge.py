@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Dict, Optional, Union
 import uuid
 
 if TYPE_CHECKING:
-    from swarm.node import Node
+    from anarchy.node import Node
 
 
 class Edge:

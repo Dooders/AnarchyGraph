@@ -8,7 +8,7 @@ TODO:
 
 from typing import Any
 
-from swarm.edge import Edges
+from anarchy.edge import Edges
 
 
 class Node:

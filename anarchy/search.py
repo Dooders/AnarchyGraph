@@ -21,7 +21,7 @@ from collections import deque
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
-    from swarm.node import Node
+    from anarchy.node import Node
 
 
 def ping(entry_node: "Node", strategy: str = "bfs") -> dict:
