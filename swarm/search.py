@@ -10,6 +10,7 @@ and performing a search from a holistic level
 
 TODO
 ----
+- different return types like node_count, edge_count, state, subgraph, etc.
 - random walk algorithm
 - a* algorithm
 - dijkstra algorithm
@@ -35,8 +36,6 @@ def ping(entry_node: "Node", strategy: str = "bfs") -> dict:
     ----
     - Add max hops
     - Add max depth
-    - Different return data like just the count, the structure, subgraph,
-        or the nodes themselves
     """
     if strategy == "bfs":
         return bfs(entry_node)
