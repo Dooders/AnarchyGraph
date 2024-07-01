@@ -1,5 +1,41 @@
 import json
 
+import ipycytoscape
+
+
+def configure_cytoscape(path):
+    with open(path) as fi:
+        json_file = json.load(fi)
+    cytoscapeobj = ipycytoscape.CytoscapeWidget()
+    cytoscapeobj.graph.add_graph_from_json(json_file["elements"])
+    cytoscapeobj.set_layout(name="grid")
+    cytoscapeobj.set_style(
+        [
+            {
+                "selector": "node",
+                "style": {"height": 20, "width": 20, "background-color": "#30c9bc"},
+            },
+            {
+                "selector": "edge",
+                "style": {
+                    "curve-style": "haystack",
+                    "haystack-radius": 0,
+                    "width": 5,
+                    "opacity": 0.5,
+                    "line-color": "#a8eae5",
+                },
+            },
+        ]
+    )
+
+    # Disable zooming and panning
+    cytoscapeobj.zoomingEnabled = False
+    cytoscapeobj.userZoomingEnabled = False
+    cytoscapeobj.panningEnabled = False
+    cytoscapeobj.userPanningEnabled = False
+
+    return cytoscapeobj
+
 
 def convert_to_cytoscape_json(graph_data: dict) -> str:
     cytoscape_data = {
