@@ -1,10 +1,8 @@
-from typing import Dict
-
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from anarchy.graph import Graph, RandomGraph
+from anarchy.graph import Graph
 from anarchy.node import Node
 
 
@@ -29,8 +27,8 @@ class TestGraph:
         g = Graph(5)
         graph_dict = g.to_dict()
         assert isinstance(graph_dict, dict)
-        assert "nodes" in graph_dict
-        assert "edges" in graph_dict
+        assert "nodes" in graph_dict["elements"]
+        assert "edges" in graph_dict["elements"]
 
     def test_to_json(self):
         g = Graph(5)
