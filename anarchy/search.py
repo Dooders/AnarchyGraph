@@ -16,7 +16,6 @@ TODO
 - dijkstra algorithm
 """
 
-import heapq
 from collections import deque
 from typing import TYPE_CHECKING, Callable
 
@@ -24,13 +23,13 @@ if TYPE_CHECKING:
     from anarchy.node import Node
 
 
-def ping(entry_node: "Node", strategy: str = "bfs") -> dict:
+def explore(entry_node: "Node", strategy: str = "bfs") -> dict:
     """
     Function to search through a decentralized graph through an entry point.
 
     By selected strategy until all connected nodes have been reached.
 
-    Like node count, IDs, etc (state)
+    Returns a dictionary of nodes and edges. {node_id: {neighbor_id: {}}}
 
     TODO
     ----
@@ -52,8 +51,6 @@ def bfs(entry_node):
 
     BFS explores all neighbors of a node before moving to the next level of nodes.
     Each node maintains a queue of neighbors to visit.
-
-    #! Working
     """
     graph_structure = {entry_node.node_id: {}}
     visited = set(
@@ -80,8 +77,6 @@ def dfs(entry_node: "Node") -> dict:
     Returns the structure of the subgraph headed by the entry node.
 
     DFS explores as far as possible along a branch before backtracking.
-
-    #! Working
     """
     graph_structure = {entry_node.node_id: {}}
     visited = set()
@@ -108,29 +103,8 @@ def dijkstra(start_node: "Node") -> dict:
     Dijkstra's algorithm is a greedy algorithm in graph theory that finds the
     shortest path between two nodes. It uses a priority queue to select the
     node with the lowest distance from the start node.
-
-    TODO
-    ----
-    - Work out a way to get weighted edges
-
-    #! Not Working
     """
-    distances = {start_node: 0}
-    priority_queue = [(0, start_node)]
-
-    while priority_queue:
-        current_distance, current_node = heapq.heappop(priority_queue)
-
-        if current_distance > distances.get(current_node, float("inf")):
-            continue
-
-        for neighbor, weight in current_node.get_neighbors_with_weights():
-            distance = current_distance + weight
-            if distance < distances.get(neighbor, float("inf")):
-                distances[neighbor] = distance
-                heapq.heappush(priority_queue, (distance, neighbor))
-
-    return distances
+    raise NotImplementedError("Dijkstra is not implemented")
 
 
 def a_star(start_node: "Node", goal_node: "Node", heuristic: Callable) -> list["Node"]:
@@ -140,45 +114,15 @@ def a_star(start_node: "Node", goal_node: "Node", heuristic: Callable) -> list["
 
     A* is a heuristic search algorithm that uses a priority queue to select the
     node with the lowest cost from the start node.
-
-    #! Not Working
     """
-    open_set = [(0, start_node)]
-    g_score = {start_node: 0}
-    f_score = {start_node: heuristic(start_node, goal_node)}
-
-    while open_set:
-        _, current = heapq.heappop(open_set)
-
-        if current == goal_node:
-            return reconstruct_path(current)
-
-        for neighbor, weight in current.get_neighbors_with_weights():
-            tentative_g_score = g_score[current] + weight
-
-            if tentative_g_score < g_score.get(neighbor, float("inf")):
-                g_score[neighbor] = tentative_g_score
-                f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal_node)
-                heapq.heappush(open_set, (f_score[neighbor], neighbor))
-
-    return None
+    raise NotImplementedError("A* is not implemented")
 
 
 def reconstruct_path(node: "Node") -> list["Node"]:
     """
     Reconstruct the path from the goal node to the start node.
-
-    TODO
-    ----
-    - Resolve bug, node has no parent attribute. Need a way to keep track of the
-        parent node.
     """
-    path = []
-    while node:
-        path.append(node)
-        node = node.parent
-    path.reverse()
-    return path
+    raise NotImplementedError("Reconstruct path is not implemented")
 
 
 def random_walk(start_node: "Node", steps: int) -> list["Node"]:
@@ -189,4 +133,4 @@ def random_walk(start_node: "Node", steps: int) -> list["Node"]:
     Random walk is a random search algorithm that explores the graph by
     randomly selecting a neighbor node.
     """
-    pass
+    raise NotImplementedError("Random walk is not implemented")
