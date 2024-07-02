@@ -14,8 +14,8 @@ class Edge:
     """
     An Edge is a connection between two nodes.
 
-    A weakref is used to reference the node. This allows the node to be garbage collected
-    when it is deleted, as well as any edges that reference it.
+    A weakref is used to reference the node. This allows the node to be garbage
+    collected when it is deleted, as well as any edges that reference it.
 
     Parameters
     ----------
@@ -29,8 +29,8 @@ class Edge:
 
     Attributes
     ----------
-    node : Node
-        See parameter.
+    node_ref : weakref.ref
+        A weakref to the node. Deleting the node will remove the edge.
     edge_type : str
         See parameter.
     node_id : int
@@ -83,11 +83,11 @@ class Edges(dict):
 
     Methods
     -------
-    add : "Node", str
+    add(node: "Node", edge_type: str = "directed") -> None
         Adds an edge to the node.
-    remove : "Node" or int or str
+    remove(node_or_id: Union["Node", int, str]) -> None
         Removes an edge from the node.
-    edges : dict
+    edges() -> Dict[int, "Edge"]
         Returns the edges of the node.
 
     TODO
