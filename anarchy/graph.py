@@ -11,7 +11,7 @@ from anarchy.edge import Edge
 from anarchy.node import Node
 from anarchy.util import configure_cytoscape, convert_to_cytoscape_json
 
-all = [
+__all__ = [
     "Graph",
     "CompleteGraph",
     "SparseGraph",
@@ -51,6 +51,8 @@ class Graph(dict):
         Removes an edge between two nodes.
     get_edges : list[tuple[Node, Node]]
         Returns the list of edges in the graph.
+    from_dict : Graph
+        Creates a Graph from a dictionary representation.
     to_dict : dict
         Returns the graph as a dictionary.
     to_json : str
@@ -87,9 +89,10 @@ class Graph(dict):
     - any from_methods???
     """
 
-    def __init__(self, node_count: int = 100) -> None:
+    def __init__(self, node_count: int = 100, edge_type: str = "directed") -> None:
         super().__init__()
         self.node_count = node_count
+        self.edge_type = edge_type
         for i in range(node_count):
             self[i] = Node(i)
 
@@ -97,9 +100,9 @@ class Graph(dict):
         """Returns a random node from the graph."""
         return random.choice(list(self.values()))
 
-    def add_edge(self, node1: int, node2: int, edge_type: str = "directed") -> None:
-        """Adds an edge between two nodes."""
-        self[node1].edges.add(self[node2], edge_type)
+    def add_edge(self, node1: int, node2: int) -> None:
+        """Adds an edge between two nodes, either directed or undirected."""
+        self[node1].edges.add(self[node2], self.edge_type)
 
     def remove_edge(self, node1: int, node2: int) -> None:
         """Removes an edge between two nodes."""
@@ -108,6 +111,24 @@ class Graph(dict):
     def get_edges(self) -> list[tuple["Node", "Node"]]:
         """Returns the list of edges in the graph."""
         return [(u, v) for u in self.nodes for v in u.edges]
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Graph":
+        """Creates a Graph from a dictionary representation."""
+
+        def add_nodes_and_edges(graph, current_node_id, neighbors):
+            if current_node_id not in graph:
+                graph[current_node_id] = Node(current_node_id)
+            for neighbor_id, nested_neighbors in neighbors.items():
+                if neighbor_id not in graph:
+                    graph[neighbor_id] = Node(neighbor_id)
+                graph.add_edge(current_node_id, neighbor_id)
+                add_nodes_and_edges(graph, neighbor_id, nested_neighbors)
+
+        graph = cls(node_count=0)  # Initialize an empty graph
+        for node_id, neighbors in data.items():
+            add_nodes_and_edges(graph, node_id, neighbors)
+        return graph
 
     def to_dict(self, schema: str = "cytoscape") -> dict:
         """Returns the graph as a dictionary."""
@@ -195,6 +216,12 @@ class CompleteGraph(Graph):
 
     Inherits from Graph class.
 
+    A complete graph is one where all nodes are connected to all other nodes.
+
+        A --- B
+        | \ / |
+        C --- D
+
     Parameters
     ----------
     node_count : int
@@ -203,9 +230,8 @@ class CompleteGraph(Graph):
         The type of edge to create. Can be "directed" or "undirected".
     """
 
-    def __init__(self, node_count: int, edge_type: str = "directed") -> None:
+    def __init__(self, node_count: int) -> None:
         super().__init__(node_count)
-        self.edge_type = edge_type
         self._create_complete_graph()
 
     def _create_complete_graph(self):
@@ -222,6 +248,15 @@ class SparseGraph(Graph):
     Creates a sparse graph with n nodes.
 
     Inherits from Graph class.
+
+    A sparse graph is one where the number of edges is close to 0 and the number
+    of edges is less than the maximum possible number of edges.
+
+        A --- B
+        |     |
+        C     D
+        |
+        E
 
     Parameters
     ----------
@@ -259,6 +294,11 @@ class IsolatedGraph(Graph):
     Creates an isolated graph with n nodes. There are no edges between nodes.
 
     Inherits from Graph class.
+
+    A isolated graph is one where all nodes are isolated, meaning that there are
+    no edges between nodes.
+
+
     """
 
     def __init__(self, node_count: int) -> None:
@@ -270,6 +310,9 @@ class StarGraph(Graph):
     Creates a star graph with n nodes.
 
     Inherits from Graph class.
+
+    A star graph is one where all nodes are connected to a single node, the center
+    node.
 
     Parameters
     ----------
@@ -299,6 +342,15 @@ class TreeGraph(Graph):
 
     Inherits from Graph class.
 
+    A tree graph is one where all nodes are connected to a single node, the center
+    node.
+    
+        A
+       / \
+      B   C
+     /   / \
+    D   E   F
+
     Parameters
     ----------
     node_count : int
@@ -325,6 +377,8 @@ class BinaryTreeGraph(Graph):
     Creates a binary tree graph with n nodes.
 
     Inherits from Graph class.
+
+    A binary tree graph is one where each node has at most two children.
 
     Parameters
     ----------
@@ -360,6 +414,9 @@ class CycleGraph(Graph):
 
     Inherits from Graph class.
 
+    A cycle graph is one where each node is connected to the next node in the cycle,
+    and the last node is connected to the first node.
+
     Parameters
     ----------
     node_count : int
@@ -386,6 +443,8 @@ class PathGraph(Graph):
     Creates a path graph with n nodes.
 
     Inherits from Graph class.
+
+    A path graph is one where each node is connected to the next node in the path.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -407,6 +466,9 @@ class WheelGraph(Graph):
     Creates a wheel graph with n nodes.
 
     Inherits from Graph class.
+
+    A wheel graph is one where each node is connected to the next node in the cycle,
+    and the last node is connected to the first node.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -435,6 +497,9 @@ class GridGraph(Graph):
     Creates a grid graph with n nodes.
 
     Inherits from Graph class.
+
+    A grid graph is one where each node is connected to the next node in the grid,
+    and the last node is connected to the first node.
     """
 
     def __init__(self, rows: int, cols: int) -> None:
@@ -464,6 +529,9 @@ class BiPartiteGraph(Graph):
     Creates a bi-partite graph with n nodes.
 
     Inherits from Graph class.
+
+    A bi-partite graph is one where the nodes are divided into two sets, U and V,
+    such that every edge connects a node in U to one in V.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -484,6 +552,8 @@ class CompleteBiPartiteGraph(Graph):
     Creates a complete bi-partite graph with n nodes.
 
     Inherits from Graph class.
+
+    A complete bi-partite graph is one where all nodes are connected to all other nodes.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -504,6 +574,9 @@ class DirectedAcyclicGraph(Graph):
     Creates a directed acyclic graph with n nodes.
 
     Inherits from Graph class.
+
+    A directed acyclic graph is one where all nodes are connected to all other nodes,
+    but there are no cycles.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -549,39 +622,3 @@ class RandomGraph(Graph):
             node1, node2 = random.sample(eligible_nodes, 2)
             node1.edges.add(node2, edge_type="directed")
             count += 1
-
-
-import matplotlib.pyplot as plt
-
-
-def draw_graph(graph: "Graph") -> None:
-    """Returns a custom visualization of graph with matplotlib"""
-    plt.figure(figsize=(10, 8))
-
-    # Generate positions for nodes
-    pos = {node: (random.uniform(0, 1), random.uniform(0, 1)) for node in graph.nodes}
-
-    # Draw nodes
-    for node, (x, y) in pos.items():
-        plt.scatter(x, y, s=700, c="skyblue")
-        plt.text(
-            x,
-            y,
-            s=node.node_id,
-            fontsize=12,
-            ha="center",
-            va="center",
-            fontweight="bold",
-        )
-
-    # Draw edges
-    edges = graph.get_edges()
-    for u, v in edges:
-        print(f"Drawing edge from {u} to {v}")
-        x1, y1 = pos[u]
-        x2, y2 = pos[v]
-        plt.plot([x1, x2], [y1, y2], "k-", lw=2)
-
-    plt.title("Custom Graph Visualization")
-    plt.axis("off")
-    plt.show()
