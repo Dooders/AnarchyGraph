@@ -6,9 +6,13 @@ TODO:
 - Edge container to make it a node component. Allows for node to have specialty edges
 """
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from anarchy.graph import Graph
 
 from anarchy.edge import Edges
+from anarchy.search import explore
 
 
 class Node:
@@ -25,12 +29,27 @@ class Node:
     edges : Edges, optional
         Dict-like object to store edges. Defaults to an empty Edges and can be
         initialized with existing edges.
+
+    Methods
+    -------
+    explore(strategy: str = "bfs") -> Graph
+        Explore the graph using a strategy. Defaults to "bfs".
     """
 
     def __init__(self, node_id: int, data: Any = None, edges: Edges = None) -> None:
         self.node_id = node_id
         self.data = data
         self.edges = edges or Edges()
+
+    def explore(self, strategy: str = "bfs") -> "Graph":
+        """
+        Explore the graph using a strategy.
+
+        Returns a graph of the explored nodes.
+        """
+        from anarchy.graph import Graph
+
+        return Graph.from_dict(explore(self, strategy=strategy))
 
     def __repr__(self) -> str:
         """
