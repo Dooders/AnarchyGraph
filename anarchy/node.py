@@ -1,9 +1,6 @@
 """
 Node stores edges in a dictionary where the key is the other node's id and the 
 value is the Edge object that has the reference to the node.
-
-TODO:
-- Edge container to make it a node component. Allows for node to have specialty edges
 """
 
 from typing import TYPE_CHECKING, Any
@@ -34,6 +31,10 @@ class AnarchyNode:
     -------
     explore(strategy: str = "bfs") -> AnarchyGraph
         Explore the graph using a strategy. Defaults to "bfs".
+
+    TODO
+    ----
+    - Improve the explore method
     """
 
     def __init__(
