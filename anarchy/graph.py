@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class Graph(dict):
+class AnarchyGraph(dict):
     """
     Dict-like object to contain nodes of a decentralized network.
 
@@ -113,7 +113,7 @@ class Graph(dict):
         return [(u, v) for u in self.nodes for v in u.edges]
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Graph":
+    def from_dict(cls, data: dict) -> "AnarchyGraph":
         """Creates a Graph from a dictionary representation."""
 
         def add_nodes_and_edges(graph, current_node_id, neighbors):
@@ -210,7 +210,7 @@ class Graph(dict):
         return len(self.edges) / (len(self.nodes) * (len(self.nodes) - 1))
 
 
-class CompleteGraph(Graph):
+class CompleteGraph(AnarchyGraph):
     """
     Creates a complete graph with n nodes.
 
@@ -243,7 +243,7 @@ class CompleteGraph(Graph):
                     self[j].edges.add(self[i], edge_type=self.edge_type)
 
 
-class SparseGraph(Graph):
+class SparseGraph(AnarchyGraph):
     """
     Creates a sparse graph with n nodes.
 
@@ -289,7 +289,7 @@ class SparseGraph(Graph):
                 edges_added.add((node2.node_id, node1.node_id))
 
 
-class IsolatedGraph(Graph):
+class IsolatedGraph(AnarchyGraph):
     """
     Creates an isolated graph with n nodes. There are no edges between nodes.
 
@@ -305,7 +305,7 @@ class IsolatedGraph(Graph):
         super().__init__(node_count)
 
 
-class StarGraph(Graph):
+class StarGraph(AnarchyGraph):
     """
     Creates a star graph with n nodes.
 
@@ -336,7 +336,7 @@ class StarGraph(Graph):
                 node.edges.add(center_node, edge_type="directed")
 
 
-class TreeGraph(Graph):
+class TreeGraph(AnarchyGraph):
     """
     Creates a tree graph with n nodes.
 
@@ -372,7 +372,7 @@ class TreeGraph(Graph):
             self[parent_id].edges.add(self[i], edge_type="directed")
 
 
-class BinaryTreeGraph(Graph):
+class BinaryTreeGraph(AnarchyGraph):
     """
     Creates a binary tree graph with n nodes.
 
@@ -408,7 +408,7 @@ class BinaryTreeGraph(Graph):
                 self[right_child_id].edges.add(self[i], edge_type="directed")
 
 
-class CycleGraph(Graph):
+class CycleGraph(AnarchyGraph):
     """
     Creates a cycle graph with n nodes.
 
@@ -438,7 +438,7 @@ class CycleGraph(Graph):
             self[next_node_id].edges.add(self[i], edge_type="directed")
 
 
-class PathGraph(Graph):
+class PathGraph(AnarchyGraph):
     """
     Creates a path graph with n nodes.
 
@@ -461,7 +461,7 @@ class PathGraph(Graph):
             self[i + 1].edges.add(self[i], edge_type="directed")
 
 
-class WheelGraph(Graph):
+class WheelGraph(AnarchyGraph):
     """
     Creates a wheel graph with n nodes.
 
@@ -492,7 +492,7 @@ class WheelGraph(Graph):
             self[next_node_id].edges.add(self[i], edge_type="directed")
 
 
-class GridGraph(Graph):
+class GridGraph(AnarchyGraph):
     """
     Creates a grid graph with n nodes.
 
@@ -524,7 +524,7 @@ class GridGraph(Graph):
                     self[bottom_node_id].edges.add(self[node_id], edge_type="directed")
 
 
-class BiPartiteGraph(Graph):
+class BiPartiteGraph(AnarchyGraph):
     """
     Creates a bi-partite graph with n nodes.
 
@@ -547,7 +547,7 @@ class BiPartiteGraph(Graph):
                 self[j].edges.add(self[i], edge_type="directed")
 
 
-class CompleteBiPartiteGraph(Graph):
+class CompleteBiPartiteGraph(AnarchyGraph):
     """
     Creates a complete bi-partite graph with n nodes.
 
@@ -569,7 +569,7 @@ class CompleteBiPartiteGraph(Graph):
                 self[j].edges.add(self[i], edge_type="directed")
 
 
-class DirectedAcyclicGraph(Graph):
+class DirectedAcyclicGraph(AnarchyGraph):
     """
     Creates a directed acyclic graph with n nodes.
 
@@ -590,7 +590,7 @@ class DirectedAcyclicGraph(Graph):
                 self[i].edges.add(self[j], edge_type="directed")
 
 
-class RandomGraph(Graph):
+class RandomGraph(AnarchyGraph):
     """
     Creates a random graph with n nodes.
 
