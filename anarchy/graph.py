@@ -2,6 +2,23 @@
 The Graph class is a dict-like object to contain nodes of a decentralized network.
 
 A selection of example graphs are provided within the module.
+
+Sample Graphs
+-------------
+Complete Graph
+Sparse Graph
+Isolated Graph
+Star Graph
+Tree Graph
+Binary Tree Graph
+Cycle Graph
+Path Graph
+Wheel Graph
+Grid Graph
+BiPartite Graph
+Complete BiPartite Graph
+Directed Acyclic Graph
+Random Graph
 """
 
 import json
@@ -84,9 +101,8 @@ class AnarchyGraph(dict):
 
     TODO
     ----
-    - to_dot method
-    - any other to_methods
-    - any from_methods???
+    - Improve the draw method to not export the graph to a JSON file and then
+      import it into cytoscape.
     """
 
     def __init__(self, node_count: int = 100, edge_type: str = "directed") -> None:
@@ -226,8 +242,6 @@ class CompleteGraph(AnarchyGraph):
     ----------
     node_count : int
         The number of nodes in the graph.
-    edge_type : str
-        The type of edge to create. Can be "directed" or "undirected".
     """
 
     def __init__(self, node_count: int) -> None:
@@ -298,7 +312,14 @@ class IsolatedGraph(AnarchyGraph):
     A isolated graph is one where all nodes are isolated, meaning that there are
     no edges between nodes.
 
+    A   B
 
+    C   D
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -313,6 +334,12 @@ class StarGraph(AnarchyGraph):
 
     A star graph is one where all nodes are connected to a single node, the center
     node.
+
+         C
+         |
+    A -- B -- D
+         |
+         E
 
     Parameters
     ----------
@@ -379,6 +406,12 @@ class BinaryTreeGraph(AnarchyGraph):
     Inherits from Graph class.
 
     A binary tree graph is one where each node has at most two children.
+    
+          A
+         / \
+        B   C
+       / \ / \
+      D  E F  G
 
     Parameters
     ----------
@@ -417,6 +450,10 @@ class CycleGraph(AnarchyGraph):
     A cycle graph is one where each node is connected to the next node in the cycle,
     and the last node is connected to the first node.
 
+    A --- B
+    |     |
+    D --- C
+
     Parameters
     ----------
     node_count : int
@@ -445,6 +482,13 @@ class PathGraph(AnarchyGraph):
     Inherits from Graph class.
 
     A path graph is one where each node is connected to the next node in the path.
+
+    A --- B --- C --- D --- E
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -469,6 +513,17 @@ class WheelGraph(AnarchyGraph):
 
     A wheel graph is one where each node is connected to the next node in the cycle,
     and the last node is connected to the first node.
+    
+          A
+         /|\
+        B-C-D
+         \|/
+          E
+          
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -500,6 +555,17 @@ class GridGraph(AnarchyGraph):
 
     A grid graph is one where each node is connected to the next node in the grid,
     and the last node is connected to the first node.
+
+    A --- B --- C --- D
+    |     |     |     |
+    E --- F --- G --- H
+
+    Parameters
+    ----------
+    rows : int
+        The number of rows in the grid.
+    cols : int
+        The number of columns in the grid.
     """
 
     def __init__(self, rows: int, cols: int) -> None:
@@ -532,6 +598,19 @@ class BiPartiteGraph(AnarchyGraph):
 
     A bi-partite graph is one where the nodes are divided into two sets, U and V,
     such that every edge connects a node in U to one in V.
+
+    Set 1: A, B
+    Set 2: C, D
+
+    A - C
+    A - D
+    B - C
+    B - D
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -554,6 +633,21 @@ class CompleteBiPartiteGraph(AnarchyGraph):
     Inherits from Graph class.
 
     A complete bi-partite graph is one where all nodes are connected to all other nodes.
+
+    Set 1: A, B
+    Set 2: C, D, E
+
+    A - C
+    A - D
+    A - E
+    B - C
+    B - D
+    B - E
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
@@ -577,6 +671,15 @@ class DirectedAcyclicGraph(AnarchyGraph):
 
     A directed acyclic graph is one where all nodes are connected to all other nodes,
     but there are no cycles.
+
+    A → B → D
+    ↓
+    C → E
+
+    Parameters
+    ----------
+    node_count : int
+        The number of nodes in the graph.
     """
 
     def __init__(self, node_count: int) -> None:
