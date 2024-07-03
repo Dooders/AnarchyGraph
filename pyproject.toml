@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "anarchygraph"
+version = "0.1.0"
+description = "A lightweight, decentralized, and node-centric graph system"
+authors = ["Chris Mangum <csmangum@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ipycytoscape = "1.3.3"
+hypothesis = "6.104.2"
+pytest = "7.4.0"
+pyperf = "2.7.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
