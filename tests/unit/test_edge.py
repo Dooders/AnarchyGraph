@@ -2,22 +2,22 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from anarchy.edge import Edge, Edges
-from anarchy.node import Node
+from anarchy.edge import AnarchyEdge, Edge
+from anarchy.node import AnarchyNode
 
 
 class TestEdges:
     @pytest.fixture
     def node1(self):
-        return Node(1)
+        return AnarchyNode(1)
 
     @pytest.fixture
     def node2(self):
-        return Node(2)
+        return AnarchyNode(2)
 
     @pytest.fixture
     def edges(self):
-        return Edges()
+        return AnarchyEdge()
 
     def test_edge_initialization(self, node1):
         edge = Edge(node1, edge_type="undirected")
@@ -42,8 +42,8 @@ class TestEdges:
 
     @given(st.integers(), st.text())
     def test_edge_weakref(self, node_id, edge_type):
-        node = Node(node_id)
-        edges = Edges()
+        node = AnarchyNode(node_id)
+        edges = AnarchyEdge()
         edge = Edge(node, edge_type=edge_type, edge_holder=edges)
         assert edge.node == node
         del node
@@ -51,8 +51,8 @@ class TestEdges:
 
     @given(st.integers(), st.text())
     def test_edges_add_and_remove(self, node_id, edge_type):
-        node = Node(node_id)
-        edges = Edges()
+        node = AnarchyNode(node_id)
+        edges = AnarchyEdge()
         edges.add(node, edge_type=edge_type)
         assert node.node_id in edges
         edges.remove(node_id)

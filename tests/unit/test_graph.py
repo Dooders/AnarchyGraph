@@ -3,7 +3,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from anarchy.graph import AnarchyGraph
-from anarchy.node import Node
+from anarchy.node import AnarchyNode
 
 
 class TestGraph:
@@ -15,12 +15,12 @@ class TestGraph:
     def test_graph_initialization(self):
         g = AnarchyGraph(5)
         assert len(g) == 5
-        assert all(isinstance(node, Node) for node in g.values())
+        assert all(isinstance(node, AnarchyNode) for node in g.values())
 
     def test_random_node(self):
         g = AnarchyGraph(5)
         node = g.random()
-        assert isinstance(node, Node)
+        assert isinstance(node, AnarchyNode)
         assert node in g.values()
 
     def test_to_dict(self):

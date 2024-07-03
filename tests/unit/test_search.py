@@ -2,13 +2,13 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from anarchy.node import Node
+from anarchy.node import AnarchyNode
 from anarchy.search import bfs, dfs
 
 
 # Helper function to create a graph from a dictionary
 def create_graph(graph_dict):
-    nodes = {node_id: Node(node_id) for node_id in graph_dict}
+    nodes = {node_id: AnarchyNode(node_id) for node_id in graph_dict}
     for node_id, edges in graph_dict.items():
         for edge_id in edges:
             nodes[node_id].edges.add(nodes[edge_id])

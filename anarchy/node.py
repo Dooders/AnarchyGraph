@@ -9,13 +9,13 @@ TODO:
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from anarchy.graph import Graph
+    from anarchy.graph import AnarchyGraph
 
-from anarchy.edge import Edges
+from anarchy.edge import AnarchyEdge
 from anarchy.search import explore
 
 
-class Node:
+class AnarchyNode:
     """
     A node is a self-contained and decentralized entity in a graph that stores
     its own data and edges.
@@ -26,30 +26,32 @@ class Node:
         The unique identifier of the node.
     data : Any, optional
         The data to be stored in the node. Defaults to None.
-    edges : Edges, optional
-        Dict-like object to store edges. Defaults to an empty Edges and can be
+    edges : AnarchyEdge, optional
+        Dict-like object to store edges. Defaults to an empty AnarchyEdge and can be
         initialized with existing edges.
 
     Methods
     -------
-    explore(strategy: str = "bfs") -> Graph
+    explore(strategy: str = "bfs") -> AnarchyGraph
         Explore the graph using a strategy. Defaults to "bfs".
     """
 
-    def __init__(self, node_id: int, data: Any = None, edges: Edges = None) -> None:
+    def __init__(
+        self, node_id: int, data: Any = None, edges: AnarchyEdge = None
+    ) -> None:
         self.node_id = node_id
         self.data = data
-        self.edges = edges or Edges()
+        self.edges = edges or AnarchyEdge()
 
-    def explore(self, strategy: str = "bfs") -> "Graph":
+    def explore(self, strategy: str = "bfs") -> "AnarchyGraph":
         """
         Explore the graph using a strategy.
 
         Returns a graph of the explored nodes.
         """
-        from anarchy.graph import Graph
+        from anarchy.graph import AnarchyGraph
 
-        return Graph.from_dict(explore(self, strategy=strategy))
+        return AnarchyGraph.from_dict(explore(self, strategy=strategy))
 
     def __repr__(self) -> str:
         """
@@ -59,11 +61,11 @@ class Node:
             f"Node({self.node_id}, Data: {self.data}, Edges: {list(self.edges.keys())})"
         )
 
-    def __eq__(self, other: "Node") -> bool:
+    def __eq__(self, other: "AnarchyNode") -> bool:
         return self.node_id == other.node_id
 
     def __hash__(self) -> int:
         return hash(self.node_id)
 
-    def __ne__(self, other: "Node") -> bool:
+    def __ne__(self, other: "AnarchyNode") -> bool:
         return self.node_id != other.node_id

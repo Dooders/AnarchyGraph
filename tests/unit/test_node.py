@@ -2,17 +2,17 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from anarchy.node import Node
+from anarchy.node import AnarchyNode
 
 
 class TestNode:
     @pytest.fixture
     def node1(self):
-        return Node(1)
+        return AnarchyNode(1)
 
     @pytest.fixture
     def node2(self):
-        return Node(2)
+        return AnarchyNode(2)
 
     def test_node_initialization(self, node1):
         # Test node initialization
@@ -54,7 +54,7 @@ class TestNode:
     )
     def test_node_repr_parametrized(self, node_id, expected_repr):
         # Test string representation with parameterized inputs
-        node = Node(node_id)
+        node = AnarchyNode(node_id)
         assert str(node) == expected_repr
 
     def test_node_set_data(self, node1):
@@ -64,34 +64,34 @@ class TestNode:
 
     @given(st.integers())
     def test_node_initialization(self, node_id):
-        node = Node(node_id)
+        node = AnarchyNode(node_id)
         assert node.node_id == node_id
         assert node.data is None
         assert node.edges() == {}
 
     @given(st.integers(), st.integers())
     def test_node_add_edge(self, node_id1, node_id2):
-        node1 = Node(node_id1)
-        node2 = Node(node_id2)
+        node1 = AnarchyNode(node_id1)
+        node2 = AnarchyNode(node_id2)
         node1.edges.add(node2)
         assert node2 in node1.edges().values()
 
     @given(st.integers(), st.integers())
     def test_node_remove_edge(self, node_id1, node_id2):
-        node1 = Node(node_id1)
-        node2 = Node(node_id2)
+        node1 = AnarchyNode(node_id1)
+        node2 = AnarchyNode(node_id2)
         node1.edges.add(node2)
         node1.edges.remove(node2)
         assert node2 not in node1.edges().values()
 
     @given(st.integers(), st.text())
     def test_node_set_data(self, node_id, data):
-        node = Node(node_id)
+        node = AnarchyNode(node_id)
         node.data = data
         assert node.data == data
 
     @given(st.integers())
     def test_node_repr(self, node_id):
-        node = Node(node_id)
+        node = AnarchyNode(node_id)
         expected_repr = f"Node({node_id}, Data: None, Edges: [])"
         assert str(node) == expected_repr

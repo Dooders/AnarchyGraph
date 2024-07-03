@@ -7,8 +7,8 @@ A selection of example graphs are provided within the module.
 import json
 import random
 
-from anarchy.edge import Edge
-from anarchy.node import Node
+from anarchy.edge import AnarchyEdge
+from anarchy.node import AnarchyNode
 from anarchy.util import configure_cytoscape, convert_to_cytoscape_json
 
 __all__ = [
@@ -94,9 +94,9 @@ class AnarchyGraph(dict):
         self.node_count = node_count
         self.edge_type = edge_type
         for i in range(node_count):
-            self[i] = Node(i)
+            self[i] = AnarchyNode(i)
 
-    def random(self) -> "Node":
+    def random(self) -> "AnarchyNode":
         """Returns a random node from the graph."""
         return random.choice(list(self.values()))
 
@@ -108,7 +108,7 @@ class AnarchyGraph(dict):
         """Removes an edge between two nodes."""
         self[node1].edges.remove(self[node2])
 
-    def get_edges(self) -> list[tuple["Node", "Node"]]:
+    def get_edges(self) -> list[tuple["AnarchyNode", "AnarchyNode"]]:
         """Returns the list of edges in the graph."""
         return [(u, v) for u in self.nodes for v in u.edges]
 
@@ -118,10 +118,10 @@ class AnarchyGraph(dict):
 
         def add_nodes_and_edges(graph, current_node_id, neighbors):
             if current_node_id not in graph:
-                graph[current_node_id] = Node(current_node_id)
+                graph[current_node_id] = AnarchyNode(current_node_id)
             for neighbor_id, nested_neighbors in neighbors.items():
                 if neighbor_id not in graph:
-                    graph[neighbor_id] = Node(neighbor_id)
+                    graph[neighbor_id] = AnarchyNode(neighbor_id)
                 graph.add_edge(current_node_id, neighbor_id)
                 add_nodes_and_edges(graph, neighbor_id, nested_neighbors)
 
@@ -180,7 +180,7 @@ class AnarchyGraph(dict):
         return cytoscapeobj
 
     @property
-    def nodes(self) -> list["Node"]:
+    def nodes(self) -> list["AnarchyNode"]:
         """Returns the list of nodes in the graph."""
         return list(self.values())
 
@@ -190,7 +190,7 @@ class AnarchyGraph(dict):
         return len(self)
 
     @property
-    def edges(self) -> list["Edge"]:
+    def edges(self) -> list["AnarchyEdge"]:
         """Returns the list of edges in the graph."""
         return [edge for node in self.values() for edge in node.edges.values()]
 

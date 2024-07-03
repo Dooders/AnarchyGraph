@@ -20,10 +20,10 @@ from collections import deque
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
-    from anarchy.node import Node
+    from anarchy.node import AnarchyNode
 
 
-def explore(entry_node: "Node", strategy: str = "bfs") -> dict:
+def explore(entry_node: "AnarchyNode", strategy: str = "bfs") -> dict:
     """
     Function to search through a decentralized graph through an entry point.
 
@@ -71,7 +71,7 @@ def bfs(entry_node):
     return graph_structure
 
 
-def dfs(entry_node: "Node") -> dict:
+def dfs(entry_node: "AnarchyNode") -> dict:
     """
     Depth-first search through an entry point node.
     Returns the structure of the subgraph headed by the entry node.
@@ -95,7 +95,7 @@ def dfs(entry_node: "Node") -> dict:
     return graph_structure
 
 
-def dijkstra(start_node: "Node") -> dict:
+def dijkstra(start_node: "AnarchyNode") -> dict:
     """
     Dijkstra's algorithm through an entry point node.
     Returns the shortest path to all connected nodes.
@@ -107,7 +107,9 @@ def dijkstra(start_node: "Node") -> dict:
     raise NotImplementedError("Dijkstra is not implemented")
 
 
-def a_star(start_node: "Node", goal_node: "Node", heuristic: Callable) -> list["Node"]:
+def a_star(
+    start_node: "AnarchyNode", goal_node: "AnarchyNode", heuristic: Callable
+) -> list["AnarchyNode"]:
     """
     A* algorithm through an entry point node.
     Returns the shortest path to all connected nodes.
@@ -118,14 +120,14 @@ def a_star(start_node: "Node", goal_node: "Node", heuristic: Callable) -> list["
     raise NotImplementedError("A* is not implemented")
 
 
-def reconstruct_path(node: "Node") -> list["Node"]:
+def reconstruct_path(node: "AnarchyNode") -> list["AnarchyNode"]:
     """
     Reconstruct the path from the goal node to the start node.
     """
     raise NotImplementedError("Reconstruct path is not implemented")
 
 
-def random_walk(start_node: "Node", steps: int) -> list["Node"]:
+def random_walk(start_node: "AnarchyNode", steps: int) -> list["AnarchyNode"]:
     """
     Random walk through an entry point node.
     Returns the path taken to all connected nodes.

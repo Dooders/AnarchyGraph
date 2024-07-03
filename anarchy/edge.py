@@ -7,7 +7,7 @@ import weakref
 from typing import TYPE_CHECKING, Dict, Optional, Union
 
 if TYPE_CHECKING:
-    from anarchy.node import Node
+    from anarchy.node import AnarchyNode
 
 
 class Edge:
@@ -23,7 +23,7 @@ class Edge:
         The node this edge is connected to.
     edge_type : str, optional
         The type of the edge. Defaults to "directed".
-    edge_holder : Edges, optional
+    edge_holder : AnarchyEdge, optional
         The edge dictionary this edge belongs to. Used to remove the edge
         from the dictionary when the node is deleted.
 
@@ -35,7 +35,7 @@ class Edge:
         See parameter.
     node_id : int
         The node_id of the node this edge is connected to.
-    edge_holder :
+    edge_holder : AnarchyEdge
         See parameter.
     finalizer : weakref.finalizer
         A weakref finalizer that will remove the edge from the edge dictionary
@@ -44,9 +44,9 @@ class Edge:
 
     def __init__(
         self,
-        node: "Node",
+        node: "AnarchyNode",
         edge_type: str = "directed",
-        edge_holder: Optional["Edges"] = None,
+        edge_holder: Optional["AnarchyEdge"] = None,
     ) -> None:
         self.node_ref = weakref.ref(node)
         self.edge_type = edge_type
@@ -64,7 +64,7 @@ class Edge:
             self.edge_holder.remove(self.node_id)
 
     @property
-    def node(self) -> Optional["Node"]:
+    def node(self) -> Optional["AnarchyNode"]:
         """
         Returns
         -------
@@ -77,17 +77,17 @@ class Edge:
         return f"Edge(node: {self.node_id}, type: {self.edge_type})"
 
 
-class Edges(dict):
+class AnarchyEdge(dict):
     """
     Dict-like object to store edges.
 
     Methods
     -------
-    add(node: "Node", edge_type: str = "directed") -> None
+    add(node: "AnarchyNode", edge_type: str = "directed") -> None
         Adds an edge to the node.
-    remove(node_or_id: Union["Node", int, str]) -> None
+    remove(node_or_id: Union["AnarchyNode", int, str]) -> None
         Removes an edge from the node.
-    edges() -> Dict[int, "Edge"]
+    edges() -> Dict[int, "AnarchyEdge"]
         Returns the edges of the node.
 
     TODO
@@ -98,7 +98,7 @@ class Edges(dict):
     def __init__(self) -> None:
         super().__init__()
 
-    def add(self, node: "Node", edge_type: str = "directed") -> None:
+    def add(self, node: "AnarchyNode", edge_type: str = "directed") -> None:
         """
         Adds an edge to the node.
 
@@ -116,7 +116,7 @@ class Edges(dict):
             if edge_type == "undirected":
                 node.edges.add(node, edge_type="directed")
 
-    def remove(self, node_or_id: Union["Node", int, str]) -> None:
+    def remove(self, node_or_id: Union["AnarchyNode", int, str]) -> None:
         """
         Removes an edge from the node.
 
@@ -136,7 +136,7 @@ class Edges(dict):
                 edge.node.edges.remove(edge)
             del self[node_id]
 
-    def edges(self) -> Dict[int, "Edge"]:
+    def edges(self) -> Dict[int, "AnarchyEdge"]:
         """
         Returns the edges of the node.
 
@@ -149,5 +149,5 @@ class Edges(dict):
             node_id: edge for node_id, edge in self.items() if edge.node is not None
         }
 
-    def __call__(self) -> Dict[int, "Edge"]:
+    def __call__(self) -> Dict[int, "AnarchyEdge"]:
         return self.edges()
