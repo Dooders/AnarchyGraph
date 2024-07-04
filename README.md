@@ -1,5 +1,5 @@
 ![AnarchyGraph Logo](docs/img/anarchy_graph_logo.png)
-
+![Project Status](https://img.shields.io/badge/status-in%20development-orange)
 # Rules of AnarchyGraph
 
 1. Be **independent**
