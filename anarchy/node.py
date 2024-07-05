@@ -44,8 +44,8 @@ class AnarchyNode:
             f"Node({self.node_id}, Data: {self.data}, Edges: {list(self.edges.keys())})"
         )
 
-    def __eq__(self, other: "AnarchyNode") -> bool:
-        return self.node_id == other.node_id
+    def __eq__(self, other_id: "AnarchyNode") -> bool:
+        return self.node_id == other_id
 
     def __hash__(self) -> int:
         return hash(self.node_id)
