@@ -23,8 +23,8 @@ Random Graph
 
 import json
 import random
+from typing import Optional, Union
 
-from anarchy.edge import AnarchyEdge
 from anarchy.node import AnarchyNode
 from anarchy.util import configure_cytoscape, convert_to_cytoscape_json
 
@@ -51,53 +51,17 @@ class AnarchyGraph(dict):
     """
     Dict-like object to contain nodes of a decentralized network.
 
-    Intended to be subclassed by other graph types.
+    Intended to be an example of how to use the Anarchy component
+    to create a graph.
+
+    Can be subclassed to create other types of graphs.
 
     Parameters
     ----------
     node_count : int
         The number of nodes in the graph.
-
-    Methods
-    -------
-    random : Node
-        Returns a random node from the graph.
-    add_edge : None
-        Adds an edge between two nodes.
-    remove_edge : None
-        Removes an edge between two nodes.
-    get_edges : list[tuple[Node, Node]]
-        Returns the list of edges in the graph.
-    from_dict : Graph
-        Creates a Graph from a dictionary representation.
-    to_dict : dict
-        Returns the graph as a dictionary.
-    to_json : str
-        Returns the graph as a JSON string.
-    to_adjacency_matrix : list[list[int]]
-        Returns the graph as an adjacency matrix.
-    to_adjacency_list : dict
-        Returns the graph as an adjacency list.
-    to_edge_list : list[tuple[int, int]]
-        Returns the graph as an edge list.
-    export : None
-        Exports the graph to a JSON file.
-    draw : bytes
-        Returns the graph as a PNG image.
-
-
-    Properties
-    ----------
-    nodes : list[Node]
-        Returns the list of nodes in the graph.
-    edges : list[Edge]
-        Returns the list of edges in the graph.
-    num_nodes : int
-        Returns the number of nodes in the graph.
-    num_edges : int
-        Returns the number of edges in the graph.
-    density : float
-        Returns the density of the graph.
+    graph_type : str
+        The type of graph to create.
 
     TODO
     ----
@@ -105,28 +69,88 @@ class AnarchyGraph(dict):
       import it into cytoscape.
     """
 
-    def __init__(self, node_count: int = 100, edge_type: str = "directed") -> None:
+    def __init__(
+        self, node_count: int = 100, graph_type: Optional[str] = "random"
+    ) -> None:
         super().__init__()
         self.node_count = node_count
-        self.edge_type = edge_type
-        for i in range(node_count):
-            self[i] = AnarchyNode(i)
+        if graph_type:
+            for node in range(node_count):
+                self[node] = AnarchyNode(node)
+            # self._build_graph(graph_type)
+
+    def _build_graph(self, graph_type: str, node_count: int):
+        #! Finish this to work. Need to separate out graph methods.
+        """Builds the graph."""
+        if graph_type == "complete":
+            CompleteGraph(node_count)
+        elif graph_type == "sparse":
+            SparseGraph(node_count)
+        elif graph_type == "isolated":
+            IsolatedGraph(node_count)
+        elif graph_type == "star":
+            StarGraph(node_count)
+        elif graph_type == "tree":
+            TreeGraph(node_count)
+        elif graph_type == "binary_tree":
+            BinaryTreeGraph(node_count)
+        elif graph_type == "cycle":
+            CycleGraph(node_count)
+        elif graph_type == "path":
+            PathGraph(node_count)
+        elif graph_type == "wheel":
+            WheelGraph(node_count)
+        elif graph_type == "grid":
+            GridGraph(node_count)
+        elif graph_type == "bipartite":
+            BiPartiteGraph(node_count)
+        elif graph_type == "complete_bipartite":
+            CompleteBiPartiteGraph(node_count)
+        elif graph_type == "directed_acyclic":
+            DirectedAcyclicGraph(node_count)
+        elif graph_type == "random":
+            RandomGraph(node_count)
+        else:
+            raise ValueError(f"Graph type {graph_type} not found.")
+
+    def add_node(self, node_id: Union[int, str], node: "AnarchyNode") -> None:
+        """
+        Adds a node to the graph indexed by its ID.
+
+        Parameters
+        ----------
+        node_id : int
+            The ID of the node.
+        node : Node
+            The node to add to the graph.
+        """
+        self[node_id] = node
+
+    def remove_node(self, node_id: Union[int, str]) -> None:
+        """
+        Removes a node from the graph from its ID.
+
+        Parameters
+        ----------
+        node_id : int
+            The ID of the node to remove.
+        """
+        del self[node_id]
+
+    def get_node(self, node_id: Union[int, str]) -> "AnarchyNode":
+        """
+        Returns a node from the graph by its ID.
+
+        Parameters
+        ----------
+        node_id : int
+            The ID of the node to get.
+        """
+        return self[node_id]
 
     def random(self) -> "AnarchyNode":
         """Returns a random node from the graph."""
         return random.choice(list(self.values()))
-
-    def add_edge(self, node1: int, node2: int) -> None:
-        """Adds an edge between two nodes, either directed or undirected."""
-        self[node1].edges.add(self[node2], self.edge_type)
-
-    def remove_edge(self, node1: int, node2: int) -> None:
-        """Removes an edge between two nodes."""
-        self[node1].edges.remove(self[node2])
-
-    def get_edges(self) -> list[tuple["AnarchyNode", "AnarchyNode"]]:
-        """Returns the list of edges in the graph."""
-        return [(u, v) for u in self.nodes for v in u.edges]
 
     @classmethod
     def from_dict(cls, data: dict) -> "AnarchyGraph":
@@ -195,6 +219,10 @@ class AnarchyGraph(dict):
         cytoscapeobj = configure_cytoscape("cytoscape_graph.json")
         return cytoscapeobj
 
+    def has_node(self, node_id: int) -> bool:
+        """Returns True if the graph has a node with the given ID, False otherwise."""
+        return node_id in self
+
     @property
     def nodes(self) -> list["AnarchyNode"]:
         """Returns the list of nodes in the graph."""
@@ -206,16 +234,6 @@ class AnarchyGraph(dict):
         return len(self)
 
     @property
-    def edges(self) -> list["AnarchyEdge"]:
-        """Returns the list of edges in the graph."""
-        return [edge for node in self.values() for edge in node.edges.values()]
-
-    @property
-    def num_edges(self) -> int:
-        """Returns the number of edges in the graph."""
-        return len(self.edges)
-
-    @property
     def density(self) -> float:
         """
         Returns the density of the graph.
@@ -223,7 +241,9 @@ class AnarchyGraph(dict):
         The density of a graph is the ratio of the number of edges to the maximum
         possible number of edges.
         """
-        return len(self.edges) / (len(self.nodes) * (len(self.nodes) - 1))
+        #! Update formula
+        # return len(self.edges) / (len(self.nodes) * (len(self.nodes) - 1))
+        return 0
 
 
 class CompleteGraph(AnarchyGraph):
