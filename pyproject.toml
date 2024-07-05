@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "anarchy"
-version = "0.1.0"
+version = "0.1.5"
 description = "A lightweight, decentralized, and node-centric graph system"
 authors = ["Chris Mangum <csmangum@gmail.com>"]
 readme = "README.md"
