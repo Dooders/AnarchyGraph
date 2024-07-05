@@ -70,7 +70,7 @@ class AnarchyGraph(dict):
     """
 
     def __init__(
-        self, node_count: int = 100, graph_type: Optional[str] = "random"
+        self, node_count: int = 100, graph_type: Optional[str] = None
     ) -> None:
         super().__init__()
         self.node_count = node_count
