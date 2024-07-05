@@ -50,5 +50,5 @@ class AnarchyNode:
     def __hash__(self) -> int:
         return hash(self.node_id)
 
-    def __ne__(self, other: "AnarchyNode") -> bool:
-        return self.node_id != other.node_id
+    def __ne__(self, other_id: "AnarchyNode") -> bool:
+        return self.node_id != other_id
