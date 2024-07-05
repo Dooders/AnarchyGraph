@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "anarchygraph"
+name = "anarchy"
 version = "0.1.0"
 description = "A lightweight, decentralized, and node-centric graph system"
 authors = ["Chris Mangum <csmangum@gmail.com>"]
