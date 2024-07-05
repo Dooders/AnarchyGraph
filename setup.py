@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="anarchygraph",
-    version="0.1.7",
+    version="0.1.8",
     author="Chris Mangum",
     author_email="csmangum@gmail.com",
     description="A decentralized graph system to simulate agents in an artificial reality.",
