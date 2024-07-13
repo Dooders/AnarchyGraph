@@ -6,24 +6,20 @@ In AnarchyGraph, each node is self-contained, having all it needs to interact wi
 
 This independence promotes the self-organizing and self-sustaining nature of the graph, without centralized control.
 
----
-
-**Benefits of Independence:**
+## **Benefits of Independence:**
 1. **Resilience:** Independent nodes make the graph more robust against failures, as the system does not rely on a single point of control.
 2. **Scalability:** Nodes can be added or removed without disrupting the overall system, facilitating seamless scalability.
 3. **Flexibility:** Autonomous nodes can adapt to changes and new information dynamically, allowing for a more flexible and responsive system.
 4. **Efficiency:** By eliminating the need for centralized coordination, nodes can operate more efficiently, reducing overhead and latency.
 
-**Practical Implications:**
+### **Practical Implications:**
 - **Decentralized Decision-Making:** Each node can make decisions based on local information, enhancing the graph’s adaptability.
 - **Enhanced Security:** With no central authority, the system is less vulnerable to targeted attacks.
 - **Collaborative Interactions:** Nodes can collaborate in a peer-to-peer manner, fostering innovation and diversity in interactions.
 
 By prioritizing node independence, AnarchyGraph leverages the power of decentralized systems to create a resilient, scalable, and efficient network of autonomous agents.
 
----
-
-**Drawbacks of Independence:**
+## **Drawbacks of Independence:**
 1. **Complexity in Coordination:** Without centralized control, coordinating complex tasks among nodes can be challenging and may require sophisticated algorithms for consensus and synchronization.
 2. **Resource Redundancy:** Each node being self-contained might lead to redundancy in resources, as multiple nodes may replicate similar functionalities or data, potentially wasting computational power and storage.
 3. **Inefficiency in Global Optimization:** Independent nodes focusing on local interactions might not achieve the most optimal global outcome, as they lack a centralized perspective on the entire system.
