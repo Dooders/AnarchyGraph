@@ -1,35 +1,43 @@
 ![AnarchyGraph Logo](docs/img/anarchy_graph_logo.png)
+
 ![Project Status](https://img.shields.io/badge/status-in%20development-orange)
+
 # Rules of AnarchyGraph
 
-1. Be **independent**
-2. Be **simple**
-3. Be **optimized**
+1. Be [**independent**](docs/independent.md)
+2. Be [**simple**](docs/simple.md)
+3. Be [**optimized**](docs/optimized.md)
 
-## Be Independent
+# Installation
 
-A node is independent when it can operate and interact autonomously of other nodes.
+```bash
+pip install anarchygraph
+```
 
-In AnarchyGraph, each node is self-contained, having all it needs to interact with other nodes.
+# Usage
 
-This independence promotes the self-organizing and self-sustaining nature of the graph, without centralized control.
+## Adding Edges
 
-## Be Simple
+```python
+from anarchy import AnarchyNode
 
-A node is simple when it performs its purpose efficiently and effectively.
+node1 = AnarchyNode(1)
+node2 = AnarchyNode(2)
+node3 = AnarchyNode(3)
 
-This means the code and design should be optimized for speed and simplicity, making it easy to understand and manage any operational complexity within the graph.
+# Add edges to Node1
+node1.edges.add(node2.node_id, node2)
+node1.edges.add(node3.node_id, node3)
 
-While the node itself should remain straightforward, the data it handles can be complex.
+print(node1.edges())
+```
 
-## Be Optimized
+## Random Graph
 
-A node is optimized when it maximizes performance and minimizes resource usage.
+```python
+from anarchy.graph import RandomGraph
 
-In AnarchyGraph, optimization goals:
+g = RandomGraph()
 
-- Efficient algorithms to handle node interactions and data processing.
-- Minimizing memory footprint to allow for scalable implementations.
-- Reducing computational overhead to ensure swift operations.
-
-The goal is to ensure each node operates at its best, enabling the entire graph to function seamlessly and efficiently under various load conditions and implementations.
+g.edges()
+```
